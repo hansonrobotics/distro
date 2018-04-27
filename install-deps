@@ -285,15 +285,15 @@ elif [[ "$(uname)" == 'Linux' ]]; then
             cmake curl readline ncurses git \
             gnuplot unzip libjpeg-turbo libpng libpng \
             imagemagick graphicsmagick fftw sox zeromq \
-            ipython qt4 qt5-webkit-ng || exit 1
+            ipython qt4 qt5-webkit || exit 1
         pacman -Sl multilib &>/dev/null
         if [[ $? -ne 0 ]]; then
-            gcc_package="gcc"
+            multilib=
         else
-            gcc_package="gcc-multilib"
+            multilib=-multilib
         fi
         sudo pacman -S --quiet --noconfirm --needed \
-            ${gcc_package} gcc-fortran || exit 1
+            gcc${multilib} gcc-fortran${multilib} || exit 1
         # if openblas is not installed yet
         pacman -Qs openblas &> /dev/null
         if [[ $? -ne 0 ]]; then
@@ -312,17 +312,9 @@ elif [[ "$(uname)" == 'Linux' ]]; then
                                 qt-devel qtwebkit-devel sox-plugins-freeworld \
                                 ipython
             install_openblas || true
-        elif [[ $fedora_major_version == '22' ||  $fedora_major_version == '23' ]]; then
+        elif [[ $fedora_major_version -ge '22' ||  $fedora_major_version -le '26' ]]; then
             #using dnf - since yum has been deprecated
             #sox-plugins-freeworld is not yet available in repos for F22
-            sudo dnf install -y make cmake curl readline-devel ncurses-devel \
-                                gcc-c++ gcc-gfortran git gnuplot unzip \
-                                libjpeg-turbo-devel libpng-devel \
-                                ImageMagick GraphicsMagick-devel fftw-devel \
-                                sox-devel sox qt-devel qtwebkit-devel \
-                                python-ipython czmq czmq-devel
-            install_openblas || true
-        elif [[ $fedora_major_version == '24' ||  $fedora_major_version == '25' ]]; then
             sudo dnf install -y make cmake curl readline-devel ncurses-devel \
                                 gcc-c++ gcc-gfortran git gnuplot unzip \
                                 libjpeg-turbo-devel libpng-devel \
